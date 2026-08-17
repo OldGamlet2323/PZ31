@@ -1,0 +1,106 @@
+### Гео-сервіс «Мої місця» — HTTP-запити (IntelliJ HTTP Client)
+
+
+@baseUrl = http://localhost:8082
+@contentType = application/json
+
+
+### Створити місце за адресою (координати підтягне Nominatim)
+POST {{baseUrl}}/places
+Content-Type: {{contentType}}
+
+{
+  "name": "Maidan",
+  "address": "Maidan Nezalezhnosti, Kyiv, Ukraine",
+  "category": "landmark"
+}
+
+> {%
+    client.global.set("placeId", response.body.id);
+    client.test("201 Created", () => client.assert(response.status === 201));
+%}
+
+### Створити місце з ручними координатами (в Nominatim не ходить)
+POST {{baseUrl}}/places
+Content-Type: {{contentType}}
+
+{
+  "name": "Home",
+  "address": "Kyiv",
+  "category": "home",
+  "latitude": 50.4501,
+  "longitude": 30.5234
+}
+
+### GET — список усіх місць (пагінація за замовчуванням: page=0, size=20)
+GET {{baseUrl}}/places
+
+### GET — список із фільтром за категорією + пагінація
+GET {{baseUrl}}/places?category=cafe&page=0&size=10
+
+### GET — список із фільтром за назвою (частковий збіг, без регістру)
+GET {{baseUrl}}/places?name=maid
+
+### GET — список із сортуванням (name за спаданням)
+GET {{baseUrl}}/places?sort=name,desc&size=5
+
+### GET — одне місце за id (id зі створеного вище)
+GET {{baseUrl}}/places/{{placeId}}
+
+### GET — пошук поблизу (Haversine), відсортовано за відстанню
+GET {{baseUrl}}/places/nearby?lat=50.4501&lon=30.5234&radiusKm=5
+
+### GET — пошук поблизу з фільтром за категорією
+GET {{baseUrl}}/places/nearby?lat=50.4501&lon=30.5234&radiusKm=5&category=cafe
+
+### GET — GeoJSON усіх місць із координатами (для карти Leaflet)
+GET {{baseUrl}}/places/geojson
+
+### Оновити місце (зміна адреси → перегеокодування)
+PUT {{baseUrl}}/places/{{placeId}}
+Content-Type: {{contentType}}
+
+{
+  "name": "Maidan Nezalezhnosti",
+  "address": "Khreshchatyk St, Kyiv, Ukraine",
+  "category": "landmark"
+}
+
+### Догеокодувати місце, збережене без координат
+POST {{baseUrl}}/places/{{placeId}}/regeocode
+
+### Видалити місце
+DELETE {{baseUrl}}/places/{{placeId}}
+
+
+### GET — пряме геокодування адреси (превʼю координат)
+GET {{baseUrl}}/geo/geocode?address=Maidan Nezalezhnosti, Kyiv, Ukraine
+
+### GET — зворотне геокодування: координати → адреса
+GET {{baseUrl}}/geo/reverse?lat=50.4501&lon=30.5234
+
+### GET — відстань між двома точками (Haversine): Київ → Львів ≈ 468 км
+GET {{baseUrl}}/geo/distance?lat1=50.4501&lon1=30.5234&lat2=49.8397&lon2=24.0297
+
+> {%
+    client.test("200 OK", () => client.assert(response.status === 200));
+    client.test("distanceKm ≈ 468", () =>
+        client.assert(Math.abs(response.body.distanceKm - 468) < 10,
+            "got " + response.body.distanceKm));
+%}
+
+### GET — відстань між однаковими точками = 0 км
+GET {{baseUrl}}/geo/distance?lat1=50.45&lon1=30.52&lat2=50.45&lon2=30.52
+
+
+### GET — неіснуюче місце → 404 PlaceNotFound
+GET {{baseUrl}}/places/999999
+
+### GET — nearby з невалідним радіусом → 400
+GET {{baseUrl}}/places/nearby?lat=50.45&lon=30.52&radiusKm=0
+
+### GET — geocode неіснуючої адреси → 404 AddressNotFound
+GET {{baseUrl}}/geo/geocode?address=asdkjhqwlekjhasd nonexistent place
+
+### GET — distance з невалідною широтою → 400 Bad Request
+GET {{baseUrl}}/geo/distance?lat1=91&lon1=30.52&lat2=50.45&lon2=30.52

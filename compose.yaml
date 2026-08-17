@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pz31-postgres
+    environment:
+      POSTGRES_DB: geo
+      POSTGRES_USER: geo
+      POSTGRES_PASSWORD: geo
+    ports:
+      - "5434:5432"
+    volumes:
+      - pz31_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U geo -d geo" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  pz31_pgdata:

@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: PZ31
+
+  #Профіль за замовчуванням: H2 (in-memory) для розробки
+  datasource:
+    url: jdbc:h2:mem:geo;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Налаштування Nominatim (OpenStreetMap)
+nominatim:
+  base-url: https://nominatim.openstreetmap.org
+  # ОБОВ'ЯЗКОВО власний User-Agent (правило Nominatim). Вкажіть свій контакт.
+  user-agent: "PZ31-MyPlaces/1.0 (andreypashko9@gmail.com)"
+  min-interval-ms: 1000
+  timeout-ms: 5000
+
+logging:
+  level:
+    org.example.pz31: DEBUG
+
+server:
+  port: 8082
+
+---
+# Профіль "postgres": перемикання H2 → PostgreSQL (docker compose up -d)
+# Запуск: ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
+spring:
+  config:
+    activate:
+      on-profile: postgres
+  datasource:
+    url: jdbc:postgresql://localhost:5434/geo
+    driver-class-name: org.postgresql.Driver
+    username: geo
+    password: geo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  h2:
+    console:
+      enabled: false

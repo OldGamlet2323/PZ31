@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+*.pem
+*.key
+target/
+build/
+*.class
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+.DS_Store
+*.log

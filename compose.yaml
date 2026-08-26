@@ -1,19 +1,36 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pashko-server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-localhost}:${DB_PORT:-5432}/${POSTGRES_DB:-geo}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SERVER_PORT: ${API_PORT}
+    ports:
+      - ${API_PORT}:${API_PORT}
+
   postgres:
     image: postgres:16-alpine
-    container_name: pz31-postgres
+    container_name: pashko-db
     environment:
-      POSTGRES_DB: geo
-      POSTGRES_USER: geo
-      POSTGRES_PASSWORD: geo
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5434:5432"
+      - ${POSTGRES_PORT}:${DB_PORT}
     volumes:
       - pz31_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U geo -d geo" ]
       interval: 5s
-      timeout: 3s
+      timeout: 3s 
       retries: 5
 
 volumes:

@@ -22,10 +22,8 @@ spring:
       enabled: true
       path: /h2-console
 
-# Налаштування Nominatim (OpenStreetMap)
 nominatim:
   base-url: https://nominatim.openstreetmap.org
-  # ОБОВ'ЯЗКОВО власний User-Agent (правило Nominatim). Вкажіть свій контакт.
   user-agent: "PZ31-MyPlaces/1.0 (andreypashko9@gmail.com)"
   min-interval-ms: 1000
   timeout-ms: 5000
@@ -38,8 +36,7 @@ server:
   port: 8082
 
 ---
-# Профіль "postgres": перемикання H2 → PostgreSQL (docker compose up -d)
-# Запуск: ./mvnw spring-boot:run -Dspring-boot.run.profiles=postgres
+
 spring:
   config:
     activate:

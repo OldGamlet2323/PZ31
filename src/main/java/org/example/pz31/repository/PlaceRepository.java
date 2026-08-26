@@ -23,7 +23,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
             WHERE p.latitude IS NOT NULL AND p.longitude IS NOT NULL
               AND p.latitude BETWEEN :minLat AND :maxLat
               AND p.longitude BETWEEN :minLon AND :maxLon
-              AND (:category IS NULL OR LOWER(p.category) = LOWER(:category))
+              AND (CAST(:category AS string) IS NULL OR LOWER(p.category) = LOWER(CAST(:category AS string)))
             """)
     List<Place> findWithinBoundingBox(@Param("minLat") double minLat,
                                       @Param("maxLat") double maxLat,

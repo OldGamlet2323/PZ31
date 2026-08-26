@@ -10,9 +10,9 @@ POST {{baseUrl}}/places
 Content-Type: {{contentType}}
 
 {
-  "name": "Maidan",
-  "address": "Maidan Nezalezhnosti, Kyiv, Ukraine",
-  "category": "landmark"
+  "name": "Home",
+  "address": "Сім'ї Ідзіковських 15/17",
+  "category": "Home"
 }
 
 > {%
@@ -28,7 +28,7 @@ Content-Type: {{contentType}}
   "name": "Home",
   "address": "Kyiv",
   "category": "home",
-  "latitude": 50.4501,
+  "latitude": 50.4502,
   "longitude": 30.5234
 }
 
@@ -36,7 +36,7 @@ Content-Type: {{contentType}}
 GET {{baseUrl}}/places
 
 ### GET — список із фільтром за категорією + пагінація
-GET {{baseUrl}}/places?category=cafe&page=0&size=10
+GET {{baseUrl}}/places?category=home&page=0&size=10
 
 ### GET — список із фільтром за назвою (частковий збіг, без регістру)
 GET {{baseUrl}}/places?name=maid
@@ -48,10 +48,10 @@ GET {{baseUrl}}/places?sort=name,desc&size=5
 GET {{baseUrl}}/places/{{placeId}}
 
 ### GET — пошук поблизу (Haversine), відсортовано за відстанню
-GET {{baseUrl}}/places/nearby?lat=50.4501&lon=30.5234&radiusKm=5
+GET {{baseUrl}}/places/nearby?lat=50.4502&lon=30.5234&radiusKm=5
 
 ### GET — пошук поблизу з фільтром за категорією
-GET {{baseUrl}}/places/nearby?lat=50.4501&lon=30.5234&radiusKm=5&category=cafe
+GET {{baseUrl}}/places/nearby?lat=50.4501&lon=30.5234&radiusKm=5&category=home
 
 ### GET — GeoJSON усіх місць із координатами (для карти Leaflet)
 GET {{baseUrl}}/places/geojson
